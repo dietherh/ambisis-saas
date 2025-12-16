@@ -2,25 +2,40 @@
   "name": "ambisis-saas",
   "private": true,
   "version": "0.1.0",
+
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
+
   "scripts": {
     "dev": "turbo run dev --parallel",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "test:unit": "turbo run test:unit",
     "format": "prettier --write .",
+    "clean": "turbo run clean && rm -rf node_modules",
     "docker:up": "docker compose up --build",
     "docker:down": "docker compose down"
   },
+
   "devDependencies": {
     "turbo": "latest",
-    "typescript": "^5.0.0",
-    "eslint": "^8.0.0",
-    "prettier": "^3.0.0"
+    "typescript": "^5.9.3",
+    "eslint": "^8.57.1",
+    "prettier": "^3.7.4",
+
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "supertest": "^6.3.4",
+    "@types/jest": "^29.5.5",
+    "@types/supertest": "^2.0.12",
+
+    "zod": "^3.23.0"
   },
+
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"

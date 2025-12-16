@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+
+model Organization {
+  id        String    @id @default(cuid())
+  name      String
+  users     User[]
+  companies Company[]
+  createdAt DateTime  @default(now())
+  licenses License[]
+}
+
+model User {
+  id             String       @id @default(cuid())
+  email          String       @unique
+  name           String
+  role           Role
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+
+  @@index([organizationId], name: "user_org_idx")
+  auditLogs AuditLog[]
+}
+
+enum Role {
+  ADMIN
+  OPERADOR
+}
+
+model Company {
+  id             String       @id @default(cuid())
+  name           String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  licenses       License[]
+  createdAt      DateTime     @default(now())
+
+  @@index([organizationId], name: "company_org_idx")
+}
+
+model License {
+  id             String       @id @default(cuid())
+  number         String
+  status         String
+  issueDate      DateTime
+  expiryDate     DateTime
+  metadata       Json?
+  companyId      String
+  company        Company      @relation(fields: [companyId], references: [id])
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+
+  @@index([organizationId], name: "license_org_idx")
+  @@index([companyId, organizationId], name: "license_company_org_idx")
+  notifications Notification[]
+}
+
+
+model AuditLog {
+  id             String   @id @default(uuid())
+  organizationId String
+  userId         String?
+  action         String
+  entity         String
+  entityId       String?
+  before         Json?
+  after          Json?
+  createdAt      DateTime @default(now())
+
+  user           User?    @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id             String   @id @default(uuid())
+  organizationId String
+  licenseId      String
+  message        String
+  read           Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  license        License  @relation(fields: [licenseId], references: [id])
+}
